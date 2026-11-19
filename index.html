@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Montserrat', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 28px 16px;
+  }
+
+  .heading-wrap {
+    position: relative;
+    display: inline-block;
+    font-size: clamp(1.75rem, 5.2vw, 3.25rem);
+    font-weight: 800;
+    color: #000000;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .brush-circle {
+    position: absolute;
+    left: -5.5%;
+    top: -36%;
+    width: 62.5%;
+    height: 175%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .brush-path {
+    fill: none;
+    stroke: #b11218;
+    stroke-width: 7.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1050;
+    stroke-dashoffset: 1050;
+  }
+
+  .heading-wrap.animate .brush-path {
+    animation: drawCircle 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  }
+
+  @keyframes drawCircle {
+    0% {
+      stroke-dashoffset: 1050;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="container" id="trigger-zone">
+    <h1 class="heading-wrap" id="heading">
+      Principal's Address
+      <svg class="brush-circle" viewBox="0 0 340 160" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <filter id="dry-brush" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.18" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.5" />
+          </filter>
+        </defs>
+
+        <path
+          id="circle-path"
+          class="brush-path"
+          filter="url(#dry-brush)"
+          d="M 195,28
+             C 110,16 20,44 16,92
+             C 12,136 96,152 186,142
+             C 276,132 330,96 322,56
+             C 314,18 220,8 118,16"
+        />
+      </svg>
+    </h1>
+  </div>
+
+  <script>
+    const heading = document.getElementById('heading');
+    const path = document.getElementById('circle-path');
+
+    const length = path.getTotalLength();
+    path.style.strokeDasharray = length;
+    path.style.strokeDashoffset = length;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            heading.classList.add('animate');
+          } else if (!entry.isIntersecting) {
+            heading.classList.remove('animate');
+          }
+        });
+      },
+      {
+        threshold: [0, 0.5]
+      }
+    );
+
+    observer.observe(document.getElementById('trigger-zone'));
+  </script>
+
+</body>
+</html>
